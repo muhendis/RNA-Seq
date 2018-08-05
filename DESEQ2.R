@@ -1,8 +1,15 @@
-library("gplots")
-library("VennDiagram")
-library("EnsDb.Mmusculus.v79")
-library("RColorBrewer")
-library("pheatmap")
+source("https://bioconductor.org/biocLite.R")
+install.packages("BiocManager",repos = "http://cran.ma.imperial.ac.uk/", dependencies = TRUE,quiet = TRUE)
+BiocManager::install(update = TRUE, ask = FALSE) #    Installed packages can be updated to their current version
+# Function to Install misisng packages and load required packages
+check.packages <- function(pkg){
+    new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
+    if (length(new.pkg)) 
+        BiocManager::install(new.pkg, dependencies = TRUE,update = TRUE, ask = FALSE)
+    sapply(pkg, require, character.only = TRUE)
+}
+packages<-c("gplots","VennDiagram","EnsDb.Mmusculus.v79","RColorBrewer","pheatmap")
+check.packages(packages)
 
 setwd("./FeatureCounts")
 files<-list.files(".",pattern="*.txt$")
