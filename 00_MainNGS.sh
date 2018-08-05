@@ -28,6 +28,8 @@ module load apps/star/2.5.1b/gcc-5.1.0
 module load apps/picardtools/1.96/noarch
 module load apps/samtools/1.3.1/gcc-4.4.7
 module load apps/subread/1.5.0-p3/gcc-4.4.7
+module load apps/R/3.5.0
+module load compilers/gcc/5.1.0
 
 ############ Create Directories #############
 
@@ -57,3 +59,4 @@ mkdir -p ./FeatureCounts
 ./04_Mapping.sh
 ./05_MarkDuplicates.sh
 ./06_FeatureCounts.sh
+Rscript DESEQ2.R

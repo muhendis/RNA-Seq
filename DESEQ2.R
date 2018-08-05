@@ -8,7 +8,7 @@ setwd("./FeatureCounts")
 files<-list.files(".",pattern="*.txt$")
 
 #### Read sample data for conditions 
-Samples<-read.csv("SampleName.csv",stringsAsFactors=FALSE, header = FALSE)
+Samples<-read.csv("../SampleName.csv",stringsAsFactors=FALSE, header = FALSE)
 Samples<-as.data.frame(Samples[,2],row.names = Samples[,1],stringsAsFactors=FALSE)
 names(Samples)[1]<-"condition"
 
