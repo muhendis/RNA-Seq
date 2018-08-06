@@ -25,4 +25,4 @@ The workflow consists of the folowing steps:
 06_FeatureCounts.sh: Now, we need to calulate the reads mapped to genes which is done using FeatureCounts
 
 
-Rscript DESEQ2.R: The R sctipt is called which used the read counts from previous step and deduces differentially expressed genes
+Rscript DESEQ2.R: The R script is called which used the read counts from previous step and deduces differentially expressed genes
