@@ -19,7 +19,7 @@
 
 cd /scratch/wsspaces/nsharma-test-0/RNA-Seq_Mouse/
   
-  ############ Load modules ############
+############ Load modules ############
 
 module load apps/bbmap/36.20
 module load apps/fastqc/0.11.3/linux-x86_64
@@ -30,6 +30,7 @@ module load apps/samtools/1.3.1/gcc-4.4.7
 module load apps/subread/1.5.0-p3/gcc-4.4.7
 module load apps/R/3.5.0
 module load compilers/gcc/5.1.0
+export R_LIBS_USER=/home/$USER/R350_libs
 
 ############ Create Directories #############
 
