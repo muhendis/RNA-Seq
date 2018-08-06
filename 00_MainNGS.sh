@@ -48,7 +48,6 @@ mkdir -p ./Mapping_STAR
 mkdir -p ./Mapping_STAR/Merged
 mkdir -p ./Mapping_STAR/Duplicates_Removed
 mkdir -p ./tmp
-mkdir -p ./MarkedDuplicates
 mkdir -p ./GenomeIndicesGRCm38.93_STAR
 mkdir -p ./FeatureCounts
 
