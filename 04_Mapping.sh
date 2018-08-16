@@ -35,6 +35,7 @@ do
         --outSJfilterReads All \
         --twopassMode Basic \
         --quantMode GeneCounts \
+        --outSAMmultNmax 1 \
         --outSAMattrRGline ID:${name1} SM:${name2}
 done
 cd ../../
