@@ -28,7 +28,7 @@ do
         --outFileNamePrefix ../../Mapping_STAR/${fbname}/${fbname} \
         --outSAMattributes All  \
         --outSAMstrandField intronMotif \
-        --sjdbOverhang 100 \
+        --sjdbOverhang 100 \ {related to read length} \
         --outSAMtype BAM SortedByCoordinate \
         --chimSegmentMin 15 \
         --chimJunctionOverhangMin 15 \
