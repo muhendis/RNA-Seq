@@ -17,8 +17,8 @@ find . -type f -iname '*.fastq.gz' |
 while read filename
 do
         fbname=$(basename "$filename" | cut -d. -f1)
-        name1=$(echo ${fbname} | cut -d "_" -f1-6)
-        name2=$(echo ${fbname} | cut -d "_" -f1-5)
+        #name1=$(echo ${fbname} | cut -d "_" -f1-6)
+        #name2=$(echo ${fbname} | cut -d "_" -f1-5)
         mkdir -p ../../Mapping_STAR/${fbname}
         STAR --runThreadN 32 \
         --genomeDir ../../GenomeIndicesGRCm38.93_STAR \
@@ -28,7 +28,7 @@ do
         --outFileNamePrefix ../../Mapping_STAR/${fbname}/${fbname} \
         --outSAMattributes All  \
         --outSAMstrandField intronMotif \
-        --sjdbOverhang 100 \ {related to read length} \
+        --sjdbOverhang 100 \
         --outSAMtype BAM SortedByCoordinate \
         --chimSegmentMin 15 \
         --chimJunctionOverhangMin 15 \
@@ -36,6 +36,16 @@ do
         --twopassMode Basic \
         --quantMode GeneCounts \
         --outSAMmultNmax 1 \
-        --outSAMattrRGline ID:${name1} SM:${name2}
+        --outFilterType BySJout \
+        --outWigType bedGraph \
+        --outWigStrand Stranded \
+        --outWigNorm RPM \
+        --alignSJoverhangMin 8 \
+        --alignSJDBoverhangMin 1 \
+        --alignIntronMin 20 \
+        --alignIntronMax 1000000 \
+        --alignMatesGapMax 1000000 \
+        --outFilterMismatchNoverReadLmax 0.04 
+        #--outSAMattrRGline ID:${name1} SM:${name2}
 done
 cd ../../
