@@ -145,14 +145,3 @@ do
 done
 cd ../
 done < ../SampleName_1.txt
-############ run Multiqc ############
-cd ./QC/PreFilteringFastQCzip_merged 
-multiqc ./* 
-cd ../PostFilteringFastQCzip_merged 
-multiqc ./* 
-cd ../../Mapping_STAR/multiqc
-multiqc ./* 
-rm -rf ../tmp
-rm -rf ./Reads/temp_merged_prefiltering # delete folder temp_merged_prefiltering as that was only for QC check
-rm -rf ./Reads/temp_unmerged # delete folder temp_unmerged as that was only for QC check
-rm -rf ./Reads/temp_merged_postfiltering # delete folder temp_merged_postfiltering as that was only for QC check
