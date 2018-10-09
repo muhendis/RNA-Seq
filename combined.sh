@@ -132,7 +132,7 @@ find . -type f -iname '*Aligned.sortedByCoord.out.bam' |
 while read filename
 do
           fbname=$(basename "$filename" | cut -d. -f1)
-          postfix=".Aligned.sortedByCoord.out.Deduped.bam"
+          postfix=".sortedByCoord.out.Deduped.bam"
           java -Xmx64g \
           -Djava.io.tmpdir=../tmp \
           -XX:ParallelGCThreads=8 \
