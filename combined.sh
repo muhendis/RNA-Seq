@@ -127,7 +127,7 @@ STAR --runThreadN 16 \
 cd ../../Mapping_STAR
 cp *Log.final.out ./multiqc
 cp *ReadsPerGene.out.tab ./multiqc
-################################################### QC_Picardtools ############################
+############################ QC_Picardtools ############################
 find . -type f -iname '*Aligned.sortedByCoord.out.bam' |
 while read filename
 do
