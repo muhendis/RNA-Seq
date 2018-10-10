@@ -59,8 +59,8 @@ done
 cat ${name}*R1*.fastq.gz > ./temp_merged_prefiltering/${name}.R1.combined.fastq.gz
 cat ${name}*R2*.fastq.gz > ./temp_merged_prefiltering/${name}.R2.combined.fastq.gz
 ############ merged pre filtering  QC check #############
-find -name ${name}*.combined.fastq.gz | xargs fastqc -t 16
 cd ./temp_merged_prefiltering
+find -name "${name}*.combined.fastq.gz" | xargs fastqc -t 16
 mv ${name}*fastqc.zip ../../QC/PreFilteringFastQCzip_merged/ # move fastqc zip file to the folder PreFilteringFastQCzip_merged
 mv ${name}*fastqc.html ../../QC/PreFilteringFastQChtml_merged/ # move fastqc html file to the folder PreFilteringFastQChtml_merged
 ############ run BBDUk for trimming/Filtering on unmerged files ############
