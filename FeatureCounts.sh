@@ -4,8 +4,8 @@
 #PBS -l nodes=1:ppn=16,mem=32Gb,walltime=5:00:00
 #PBS -m bea
 #PBS -M nitin.sharma@cruk.manchester.ac.uk
-#PBS -o /scratch/wsspaces/nsharma-Alessio_ACseries-0/LogFCounts
-#PBS -e /scratch/wsspaces/nsharma-Alessio_ACseries-0/LogFCounts
+#PBS -o /scratch/wsspaces/nsharma-Alessio_ACseries-0/LogFCountsDeduped
+#PBS -e /scratch/wsspaces/nsharma-Alessio_ACseries-0/LogFCountsDeduped
 #PBS -j oe
 #PBS -V
 ##PBS -A tartheonc
@@ -25,5 +25,6 @@ do
                   -s 1 \
                   -g gene_id \
                   -a ../../GenomeIndicesSTAR_hg38/hg38.gtf \
-                  -o ../FeatureCounts/${fbname}".fCounts.txt"
+                  -o ../FeatureCounts_Duplicates_Removed/${fbname}".fCounts.txt" \
+                  $filename 
 done
