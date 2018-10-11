@@ -11,11 +11,11 @@ check.packages <- function(pkg){
 packages<-c("gplots","VennDiagram","EnsDb.Mmusculus.v79","RColorBrewer","pheatmap")
 check.packages(packages)
 
-setwd("./FeatureCounts")
+setwd("/Users/nsharma/Documents/CRUK-MI_Projects/Alessio/Mapping_STAR/FeatureCounts_Duplicates_Removed")
 files<-list.files(".",pattern="*.txt$")
 
 #### Read sample data for conditions 
-Samples<-read.csv("../SampleName.csv",stringsAsFactors=FALSE, header = FALSE)
+Samples<-read.csv("SampleName.csv",stringsAsFactors=FALSE, header = FALSE)
 Samples<-as.data.frame(Samples[,2],row.names = Samples[,1],stringsAsFactors=FALSE)
 names(Samples)[1]<-"condition"
 
@@ -40,28 +40,54 @@ for(i in 1:length(list.files(".",pattern="*.txt$")))
 }
 row.names(Counts)<-Counts[,1]
 Counts<-Counts[,-1]
-colnames(Counts)<-c("TI2_01","TI2_02","TI2_03","TI2_04","TI2_05","TI2_06","TI2_07","TI2_08","TI2_09","TI2_10","TI2_11","TI2_12","TI2_13","TI2_14","TI2_15","TI2_16")
+colnames(Counts)<-c("AC1","AC10","AC2","AC3","AC4","AC5","AC6","AC9")
 Counts[]<-sapply(Counts[], as.numeric)
-Counts<-Counts[,c(1:3,5:10,12)]
+Counts<-Counts[,c(c(1,3:8,2))]
+Counts<-Counts[,c(1,3,5,2,4,6,7,8)]
 Counts<-Counts[which(rowSums(Counts)>0),] # remove the genes with no reads mapped
 
 Samples.org<-Samples
 Counts.org<-Counts
-
 Samples$ID<-rownames(Samples)
-Samples<-as.data.frame(Samples[-c(1,7),])
-Counts<-Counts[,-c(1,7)]
 
 library("DESeq2")
 ##### Differential expression analysis
 dds <- DESeqDataSetFromMatrix(countData = Counts,colData = Samples,design = ~ condition)
-dds$condition <- relevel(dds$condition, ref = "Untreated")
+dds$condition <- relevel(dds$condition, ref = "untreated")
 dds <- DESeq(dds)
-#resultsNames(dds)
+resultsNames(dds)
 
 ### calculate normalised Counts ###
 dds.norm<-estimateSizeFactors(dds)
 Counts.normal<-counts(dds.norm, normalized=TRUE)
+
+##################### PLotting using Normalised data from Deseq2  ############################
+
+Counts.normal.log<-log(Counts.normal)
+Counts.normal.log.isfinite <- Counts.normal.log[is.finite(rowSums(Counts.normal.log)),]
+Counts.normal.log.isfinite.t<-as.data.frame(t(Counts.normal.log.isfinite))
+Counts.normal.log.isfinite.t["type"] = c("scbrl", "scbrl", "scbrl", "miR378a", "miR378a", "miR378a", "untreated","untreated")
+
+####### Plot PCA ########
+
+autoplot(prcomp(Counts.normal.log.isfinite.t[,c(1:(ncol(Counts.normal.log.isfinite.t)-1))]), 
+         data = Counts.normal.log.isfinite.t, 
+         colour = 'type',
+         label=TRUE,
+         label.size = 4)
+dev.off()
+
+####### Plot HeatMap ########
+
+Samples<-read.csv("SampleName.csv",stringsAsFactors=FALSE, header = FALSE)
+Samples<-as.data.frame(Samples[,2],row.names = Samples[,1],stringsAsFactors=FALSE)
+names(Samples)[1]<-"condition"
+colors <- colorRampPalette( rev(brewer.pal(9, "RdBu")) )(255)
+pheatmap(Counts.normal.log.isfinite, col=colors,show_rownames = FALSE, annotation_col=Samples, scale="row")
+dev.off()
+
+########################################################
+
 
 res.CD40 <- results(dds, contrast=c("condition","CD40","Untreated"), alpha = 0.05)  ##### CD40 vs Control ####
 res.RT <- results(dds, contrast=c("condition","RT","Untreated"), alpha = 0.05)   ##### RT vs Control ####
