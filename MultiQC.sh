@@ -10,20 +10,29 @@
 #PBS -V
 ##PBS -A tartheonc
 
+############ Load modules ############
+module load apps/multiqc/1.4
+
 ############ Change Directory ############
 
 cd /scratch/wsspaces/nsharma-Alessio_ACseries-0/
   
-###################################### Feature counts ############################
-
 ############ run Multiqc ############
-cd ./QC/PreFilteringFastQCzip_merged 
+cd ./Reads/temp_merged_prefiltering
+mv *fastqc.zip ../../QC/PreFilteringFastQCzip_merged/ # move fastqc zip file to the folder PreFilteringFastQCzip_merged
+mv *fastqc.html ../../QC/PreFilteringFastQChtml_merged/ # move fastqc html file to the folder PreFilteringFastQChtml_merged
+cd ../../QC/PreFilteringFastQCzip_merged 
 multiqc ./* 
-cd ../PostFilteringFastQCzip_merged 
+
+cd ../../Reads/temp_merged_postfiltering # change directory to temp_merged_prefiltering
+mv *fastqc.zip ../../QC/PostFilteringFastQCzip_merged/ # move fastqc zip file to the folder PreFilteringFastQCzip_merged
+mv *fastqc.html ../../QC/PostFilteringFastQChtml_merged/ # move fastqc html file to the folder PreFilteringFastQChtml_merged
+cd ../../QC/PostFilteringFastQCzip_merged 
 multiqc ./* 
-cd ../../Mapping_STAR/multiqc
+
+cd ../../Mapping_STAR
+mkdir -p ./multiqc
+find . -type f -iname "[a-zA-Z0-9]*Log.final.out" | xargs cp -t ./multiqc
+find . -type f -iname "[a-zA-Z0-9]*ReadsPerGene.out.tab" | xargs cp -t ./multiqc
+cd ./multiqc
 multiqc ./* 
-rm -rf ../tmp
-#rm -rf ./Reads/temp_merged_prefiltering # delete folder temp_merged_prefiltering as that was only for QC check
-#rm -rf ./Reads/temp_unmerged # delete folder temp_unmerged as that was only for QC check
-#rm -rf ./Reads/temp_merged_postfiltering # delete folder temp_merged_postfiltering as that was only for QC check

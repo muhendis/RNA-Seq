@@ -37,7 +37,6 @@ mkdir -p ./Reads/temp_unmerged
 mkdir -p ./Reads/temp_merged_prefiltering
 mkdir -p ./Reads/temp_merged_postfiltering
 mkdir -p ./Mapping_STAR
-mkdir -p ./Mapping_STAR/Merged
 mkdir -p ./Mapping_STAR/Duplicates_Removed
 mkdir -p ./Mapping_STAR/multiqc
 mkdir -p ./tmp
@@ -61,8 +60,6 @@ cat ${name}*R2*.fastq.gz > ./temp_merged_prefiltering/${name}.R2.combined.fastq.
 ############ merged pre filtering  QC check #############
 find -name ${name}*.combined.fastq.gz | xargs fastqc -t 16
 cd ./temp_merged_prefiltering
-mv ${name}*fastqc.zip ../../QC/PreFilteringFastQCzip_merged/ # move fastqc zip file to the folder PreFilteringFastQCzip_merged
-mv ${name}*fastqc.html ../../QC/PreFilteringFastQChtml_merged/ # move fastqc html file to the folder PreFilteringFastQChtml_merged
 ############ run BBDUk for trimming/Filtering on unmerged files ############
 cd ../temp_unmerged  # change directory to "temp_unmerged" to run QC check using BBDUK
  for i in {1..6}
@@ -94,8 +91,6 @@ cat ${name}*R2*.fastq.gz > ../../Reads/temp_merged_postfiltering/${name}.R2.QCpa
 ########### FastQC for merged QC passed reads ############
 cd ../../Reads/temp_merged_postfiltering # change directory to temp_merged_prefiltering
 find -name "${name}*.QCpassed.combined.fastq.gz" | xargs fastqc -t 16 # pass all merged reads as argument for fastqc
-mv ${name}*fastqc.zip ../../QC/PostFilteringFastQCzip_merged/ # move fastqc zip file to the folder PreFilteringFastQCzip_merged
-mv ${name}*fastqc.html ../../QC/PostFilteringFastQChtml_merged/ # move fastqc html file to the folder PreFilteringFastQChtml_merged
 ############ Mapping By STAR ############
 mkdir -p ../../Mapping_STAR/${name}
 STAR --runThreadN 16 \
@@ -124,11 +119,9 @@ STAR --runThreadN 16 \
      --alignIntronMax 1000000 \
      --alignMatesGapMax 1000000 \
      --outFilterMismatchNoverReadLmax 0.04
-cd ../../Mapping_STAR
-cp *Log.final.out ./multiqc
-cp *ReadsPerGene.out.tab ./multiqc
 ############################ QC_Picardtools ############################
-find . -type f -iname '*Aligned.sortedByCoord.out.bam' |
+cd ../../Mapping_STAR
+find . -type f -iname "${name}*Aligned.sortedByCoord.out.bam" |
 while read filename
 do
           fbname=$(basename "$filename" | cut -d. -f1)
