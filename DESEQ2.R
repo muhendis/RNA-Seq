@@ -11,7 +11,7 @@ check.packages <- function(pkg){
 packages<-c("gplots","VennDiagram","EnsDb.Mmusculus.v79","RColorBrewer","pheatmap")
 check.packages(packages)
 
-setwd("/Users/nsharma/Documents/CRUK-MI_Projects/Alessio/Mapping_STAR/FeatureCounts_Duplicates_Removed")
+setwd("/Users/nsharma/Documents/CRUK-MI_Projects/Alessio/Run_01/Mapping_STAR/FeatureCounts_Deduped_Paired")
 files<-list.files(".",pattern="*.txt$")
 
 #### Read sample data for conditions 
@@ -44,14 +44,15 @@ colnames(Counts)<-c("AC1","AC10","AC2","AC3","AC4","AC5","AC6","AC9")
 Counts[]<-sapply(Counts[], as.numeric)
 Counts<-Counts[,c(c(1,3:8,2))]
 Counts<-Counts[,c(1,3,5,2,4,6,7,8)]
-Counts<-Counts[which(rowSums(Counts)>0),] # remove the genes with no reads mapped
-
-Samples.org<-Samples
 Counts.org<-Counts
+Counts<-Counts[which(rowSums(Counts)>0),] # remove the genes with no reads mapped
+Samples.org<-Samples
 Samples$ID<-rownames(Samples)
 
 library("DESeq2")
-##### Differential expression analysis
+
+##################### Differential expression analysis w.r.t "untreated" ##################### 
+
 dds <- DESeqDataSetFromMatrix(countData = Counts,colData = Samples,design = ~ condition)
 dds$condition <- relevel(dds$condition, ref = "untreated")
 dds <- DESeq(dds)
@@ -89,32 +90,60 @@ dev.off()
 ########################################################
 
 
-res.CD40 <- results(dds, contrast=c("condition","CD40","Untreated"), alpha = 0.05)  ##### CD40 vs Control ####
-res.RT <- results(dds, contrast=c("condition","RT","Untreated"), alpha = 0.05)   ##### RT vs Control ####
-res.Combo <- results(dds, contrast=c("condition","Combination","Untreated"), alpha = 0.05)##### CD40+RT vs Control ####
+res.miR378a.untreated <- results(dds, contrast=c("condition","miR378a","untreated"), alpha = 0.01)  ##### miR378a vs untreated ####
+res.scbrl.untreated <- results(dds, contrast=c("condition","scbrl","untreated"), alpha = 0.01)   ##### scbrl vs untreated ####
 
 # Create columns for inforamation on significant genes later used in volcano plot
-res.Combo<-as.data.frame(dplyr::mutate(as.data.frame(res.Combo), sig=ifelse(res.Combo$padj<0.05, "FDR<0.05", "Not Sig")), row.names=rownames(res.Combo))
-res.RT<-as.data.frame(dplyr::mutate(as.data.frame(res.RT), sig=ifelse(res.RT$padj<0.05, "FDR<0.05", "Not Sig")), row.names=rownames(res.RT))
-res.CD40<-as.data.frame(dplyr::mutate(as.data.frame(res.CD40), sig=ifelse(res.CD40$padj<0.05, "FDR<0.05", "Not Sig")), row.names=rownames(res.CD40))
+res.miR378a.untreated<-as.data.frame(dplyr::mutate(as.data.frame(res.miR378a.untreated), sig=ifelse(res.miR378a.untreated$padj<0.01, "FDR<0.01", "Not Sig")), row.names=rownames(res.miR378a.untreated))
+res.scbrl.untreated<-as.data.frame(dplyr::mutate(as.data.frame(res.scbrl.untreated), sig=ifelse(res.scbrl.untreated$padj<0.01, "FDR<0.01", "Not Sig")), row.names=rownames(res.scbrl.untreated))
+
+write.csv(res.miR378a.untreated, file = "res.miR378a.untreated.csv")
+write.csv(res.scbrl.untreated, file = "res.scbrl.untreated.csv")
 
 # Subset significant genes according to Log Fold Change cutoff
-res.CD40.Sig <- subset(res.CD40, res.CD40$padj < 0.05 & abs(res.CD40$log2FoldChange) >=1); res.CD40.Sig <- res.CD40.Sig[order(res.CD40.Sig$padj),]
-res.Combo.Sig <- subset(res.Combo, res.Combo$padj < 0.05 & abs(res.Combo$log2FoldChange) >=1); res.Combo.Sig <- res.Combo.Sig[order(res.Combo.Sig$padj),]
-res.RT.Sig <- subset(res.RT, res.RT$padj < 0.05 & abs(res.RT$log2FoldChange) >=1); res.RT.Sig <- res.RT.Sig[order(res.RT.Sig$padj),]
+res.miR378a.untreated.Sig <- subset(res.miR378a.untreated, res.miR378a.untreated$padj < 0.01 & abs(res.miR378a.untreated$log2FoldChange) >=1)
+res.miR378a.untreated.Sig <- res.miR378a.untreated.Sig[order(res.miR378a.untreated.Sig$padj),]
+res.scbrl.untreated.Sig <- subset(res.scbrl.untreated, res.scbrl.untreated$padj < 0.01 & abs(res.scbrl.untreated$log2FoldChange) >=1)
+res.scbrl.untreated.Sig <- res.scbrl.untreated.Sig[order(res.scbrl.untreated.Sig$padj),]
 
 # Add annotations (gene names) to the selected genes
-convertID<-function(db,ids,key.type,toKey){
-  suppressWarnings(x<-mapIds(db, keys=ids, keytype=key.type, column=toKey))
-  return(x)
-}
+#convertID<-function(db,ids,key.type,toKey){
+#  suppressWarnings(x<-mapIds(db, keys=ids, keytype=key.type, column=toKey))
+#  return(x)
+#}
+#res.RT.Sig$Gene_ID<-convertID(EnsDb.Mmusculus.v79,row.names(res.RT.Sig), "GENEID","SYMBOL")
+#res.Combo.Sig$Gene_ID<-convertID(EnsDb.Mmusculus.v79,row.names(res.Combo.Sig), "GENEID","SYMBOL")
+#res.CD40.Sig$Gene_ID<-convertID(EnsDb.Mmusculus.v79,row.names(res.CD40.Sig), "GENEID","SYMBOL")
 
-res.RT.Sig$Gene_ID<-convertID(EnsDb.Mmusculus.v79,row.names(res.RT.Sig), "GENEID","SYMBOL")
-res.Combo.Sig$Gene_ID<-convertID(EnsDb.Mmusculus.v79,row.names(res.Combo.Sig), "GENEID","SYMBOL")
-res.CD40.Sig$Gene_ID<-convertID(EnsDb.Mmusculus.v79,row.names(res.CD40.Sig), "GENEID","SYMBOL")
-write.csv(res.CD40.Sig, file = "res.CD40.Sig.csv")
-write.csv(res.Combo.Sig, file = "res.Combo.Sig.csv")
-write.csv(res.RT.Sig, file = "res.RT.Sig.csv")
+write.csv(res.miR378a.untreated.Sig, file = "res.miR378a.untreated.Sig.csv")
+write.csv(res.scbrl.untreated.Sig, file = "res.scbrl.untreated.Sig.csv")
+
+
+
+##################### Differential expression analysis w.r.t "Scramble" ##################### 
+
+dds <- DESeqDataSetFromMatrix(countData = Counts,colData = Samples,design = ~ condition)
+dds$condition <- relevel(dds$condition, ref = "scbrl")
+dds <- DESeq(dds)
+resultsNames(dds)
+
+res.miR378a.scbrl <- results(dds, contrast=c("condition","miR378a","scbrl"), alpha = 0.01)  ##### miR378a vs scbrl ####
+
+# Create columns for inforamation on significant genes later used in volcano plot
+res.miR378a.scbrl<-as.data.frame(dplyr::mutate(as.data.frame(res.miR378a.scbrl), sig=ifelse(res.miR378a.scbrl$padj<0.01, "FDR<0.01", "Not Sig")), row.names=rownames(res.miR378a.scbrl))
+write.csv(res.miR378a.scbrl, file = "res.miR378a.scbrl.csv")
+
+# Subset significant genes according to Log Fold Change cutoff
+res.miR378a.scbrl.Sig <- subset(res.miR378a.scbrl, res.miR378a.scbrl$padj < 0.01 & abs(res.miR378a.scbrl$log2FoldChange) >=1)
+res.miR378a.scbrl.Sig <- res.miR378a.scbrl.Sig[order(res.miR378a.scbrl.Sig$padj),]
+write.csv(res.miR378a.scbrl.Sig, file = "res.miR378a.scbrl.Sig.csv")
+
+
+
+
+
+
+
 
 
 ## significant genes combined
