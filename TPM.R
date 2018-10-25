@@ -46,43 +46,41 @@ write.csv(counts,file = "GeneCounts.csv")
 
 ###### TPM #######
 
-temp<-as.data.frame.matrix(counts)
-
+TPM<-as.data.frame.matrix(counts)
 
 # STEP 1: Divide the read counts by the length of each gene in kilobases. This gives you reads per kilobase (RPK)
-for(i in 1:nrow(temp))
+for(i in 1:nrow(TPM))
 {
-  (gene.name<-rownames(temp)[i]) # Get name of the gene
+  (gene.name<-rownames(TPM)[i]) # Get name of the gene
   (gene.len<-as.numeric(noquote(h[[ gene.name ]]))/1000)  # Fetch gene length in number of bases converted into kilo bases
-  for(j in 1:ncol(temp))
+  for(j in 1:ncol(TPM))
   {
-    temp[i,j]<-(as.numeric(temp[i,j]))/gene.len  # divide the number of reads by gene length 
+    TPM[i,j]<-(as.numeric(TPM[i,j]))/gene.len  # divide the number of reads by gene length 
   }
 }
-TPM<-temp
 
 # STEP 2: Sum all the reads and divide that by 1000000 to calculate scaling factor
 read.sum<-vector()
-for(i in 1:ncol(temp))
+for(i in 1:ncol(TPM))
 { 
   read.sum[i]<-0
-  for(j in 1:nrow(temp))
+  for(j in 1:nrow(TPM))
   {
-    read.sum[i]<-read.sum[i]+(as.numeric(temp[j,i])) # sum of each column
+    read.sum[i]<-read.sum[i]+(as.numeric(TPM[j,i])) # sum of each column
   }
 }
 scaling.factor<-read.sum/1000000
 
 # STEP 3: Divide output of step 1 by scaling.factor from step 2
-for(i in 1:ncol(temp))
+for(i in 1:ncol(TPM))
 { 
-  for(j in 1:nrow(temp))
+  for(j in 1:nrow(TPM))
   {
-    temp[j,i]<-(as.numeric(temp[j,i]))/scaling.factor[i] # sum of each column
+    TPM[j,i]<-(as.numeric(TPM[j,i]))/scaling.factor[i] # sum of each column
   }
 }
 
-TPM<-(temp[,c(1,3:8,2)])
+TPM<-(TPM[,c(1,3:8,2)])
 TPM<-TPM[,c(1,3,5,2,4,6,7,8)]
 temp<-TPM
 TPM <- as.matrix(as.data.frame(lapply(TPM, as.numeric)))
