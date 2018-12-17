@@ -1,5 +1,4 @@
-# RNA-Seq_Mouse
-Bulk RNA-Seq Analysis Workflow
+# Bulk RNA-Seq Analysis Workflow
 
 The RNA-Seq reads should be kept in the folder in Reads in the working directory
 
