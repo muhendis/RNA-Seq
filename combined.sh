@@ -29,8 +29,6 @@ module load apps/subread/1.5.0-p3/gcc-4.4.7
 mkdir -p ./QC
 mkdir -p ./QC/PreFilteringFastQCzip_merged
 mkdir -p ./QC/PreFilteringFastQChtml_merged
-mkdir -p ./QC/PostFilteringFastQCzip_merged
-mkdir -p ./QC/PostFilteringFastQChtml_merged
 mkdir -p ./QC/QCpassed
 mkdir -p ./QC/QCfailed
 mkdir -p ./Reads/temp_unmerged
